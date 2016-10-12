@@ -3,11 +3,14 @@
 #include "Player.h"
 #include "level.h"
 #include "Config.h"
-
+#include "Light.h"
+#include <ltbl/lighting/LightSystem.h>
 struct Game
 {
 	Level level;
 	sf::View view;
+	sf::View viewLight;
+	Lights *light;
 	sf::RenderWindow window;
 	Player player;
 	TextureGame textureGame;

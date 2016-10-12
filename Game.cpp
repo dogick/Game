@@ -4,8 +4,10 @@
 void InitializeGame(Game & game)
 {
 	game.level.LoadFromFile("platformer.tmx");
+	game.light = new Lights(sf::Vector2f(static_cast<float>(game.level.GetTileSize().x), static_cast<float>(game.level.GetTileSize().y)));
 	game.view.reset(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 	game.window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Game");
+	game.viewLight = game.window.getDefaultView();
 	game.textureGame.LoadingFromFileTexture();
 	game.player.playerSound.LoadingFromFileSound();
 	InitializePlayer(game.player, game.textureGame);
@@ -99,11 +101,18 @@ void RenderBullets(Game &game)
 void Render(sf::RenderWindow & window, sf::Sprite & playerSprite, sf::Sprite &cursorSprite, Game &game)
 {
 	window.clear();
-	window.setView(game.view);
 	game.level.Draw(window);
 	RenderBullets(game);
-	window.draw(cursorSprite);
 	window.draw(playerSprite);
+	window.setView(game.viewLight);
+	game.light->light2->_emissionSprite.setPosition(playerSprite.getPosition());
+	game.light->light2->_emissionSprite.setRotation(playerSprite.getRotation());
+	game.light->ls.render(game.view, game.light->unshadowShader, game.light->lightOverShapeShader);
+	game.light->Lsprite.setTexture(game.light->ls.getLightingTexture()); //затемнение
+	game.light->lightRenderStates.blendMode = sf::BlendMultiply; //фон
+	window.draw(game.light->Lsprite, game.light->lightRenderStates);
+	window.setView(game.view);
+	window.draw(cursorSprite);
 	window.display();
 }
 

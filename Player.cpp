@@ -60,7 +60,7 @@ void PlayerShootingShotgun(Player &player, sf::Vector2f &vectorNormal)
 	if (player.isShot && (player.weapon == Arms::SHOTGUN))
 	{
 		player.playerSound.soundShotgunShot.play();
-
+		new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0.1f, 0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0.1f, 0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0, 0), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(-0.1f, -0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));

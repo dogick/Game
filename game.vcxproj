@@ -91,6 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,6 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,10 +156,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\lighting\LightDirectionEmission.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\lighting\LightPointEmission.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\lighting\LightShape.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\lighting\LightSystem.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\Math.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\quadtree\DynamicQuadtree.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\quadtree\Quadtree.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\quadtree\QuadtreeNode.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\quadtree\QuadtreeOccupant.h" />
+    <ClInclude Include="..\..\..\..\..\..\include\ltbl\quadtree\StaticQuadtree.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Texture.h" />
@@ -165,10 +178,21 @@
     <ClInclude Include="TinyXML\tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\lighting\LightDirectionEmission.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\lighting\LightPointEmission.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\lighting\LightShape.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\lighting\LightSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\Math.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\quadtree\DynamicQuadtree.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\quadtree\Quadtree.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\quadtree\QuadtreeNode.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\quadtree\QuadtreeOccupant.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\include\ltbl\quadtree\StaticQuadtree.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="level.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="stdafx.cpp">
