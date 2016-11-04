@@ -1,21 +1,24 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <ltbl/lighting/LightSystem.h>
 #include "Player.h"
 #include "level.h"
 #include "Config.h"
 #include "Light.h"
-#include <ltbl/lighting/LightSystem.h>
+#include "Var.h"
+
 struct Game
 {
-	Level level;
-	sf::View view;
-	sf::View viewLight;
-	Lights *light;
-	sf::RenderWindow window;
-	Player player;
-	TextureGame textureGame;
-
-	sf::Sprite cursorSprite;
+    Level level;
+    sf::View view;
+    sf::View viewLight;
+    Lights *light;
+    sf::RenderWindow window;
+    Player player;
+    TextureGame textureGame;
+    Objects barrier;
+    sf::Sprite cursorSprite;
+    sf::Sprite bulletSprite;
 };
 
 void InitializeGame(Game & game);

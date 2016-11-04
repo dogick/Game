@@ -1,13 +1,16 @@
+#include "stdafx.h"
 #include "Player.h"
 #include "Config.h"
+#include "Var.h"
 
 void InitializePlayer(Player & player, TextureGame & texture)
 {
 	player.playerSprite.setTexture(texture.playerTexture);
-	player.bulletSprite.setTexture(texture.bulletTexture);
 	InitializePlayerSound(player);
 	player.playerSprite.setTextureRect(sf::IntRect(150, 121, 150, 121));
 	player.playerSprite.setPosition(250, 250);
+    sf::IntRect textureRect = player.playerSprite.getTextureRect();
+    player.playerSprite.setOrigin(textureRect.width / 2.f, textureRect.height / 2.f);
 	player.direction = Direction::NONE;
 	player.countFrame = 0;
 	player.currentFrame = 0;
@@ -16,7 +19,7 @@ void InitializePlayer(Player & player, TextureGame & texture)
 	player.shootingTime = 0;
 }
 
-void PlayerSound::LoadingFromFileSound()
+void PlayerSound::LoadSoundFiles()
 {
 	soundShotgunShotBuffer.loadFromFile("resources/sound/shotgun.ogg");
 	soundM4A1ShotBuffer.loadFromFile("resources/sound/shoot.ogg");
@@ -35,17 +38,15 @@ sf::Vector2f GetMousePosition(sf::RenderWindow &window)
 	return window.mapPixelToCoords(pixelPos);
 }
 
-void UpdatePlayerRotation(Player &player) //ѕоворот игрока за курсором мыши
+void RotatePlayer(Player &player) 
 {
 	float dx = player.mousePosition.x - player.playerSprite.getPosition().x;
 	float dy = player.mousePosition.y - player.playerSprite.getPosition().y;
-	sf::IntRect textureRect = player.playerSprite.getTextureRect();
-	player.playerSprite.setOrigin(textureRect.width / 2.f, textureRect.height / 2.f);
 	float rotation = (atan2(dy, dx)) * 180 / PI;
 	player.playerSprite.setRotation(rotation);
 }
 
-void PlayerShootingM4A1(Player &player, sf::Vector2f &vectorNormal)
+void ShootFromM4A1(Player &player, sf::Vector2f &vectorNormal)
 {
 	if (player.isShot && (player.weapon == Arms::M4A1) && (player.shootingTime > 0.2))
 	{
@@ -55,12 +56,12 @@ void PlayerShootingM4A1(Player &player, sf::Vector2f &vectorNormal)
 	}
 }
 
-void PlayerShootingShotgun(Player &player, sf::Vector2f &vectorNormal)
+void ShootFromShotgun(Player &player, sf::Vector2f &vectorNormal)
 {
 	if (player.isShot && (player.weapon == Arms::SHOTGUN))
 	{
 		player.playerSound.soundShotgunShot.play();
-		new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0.1f, 0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN));
+		//new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0.1f, 0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0.1f, 0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(0, 0), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));
 		player.bullets.push_back(new Bullet(player.playerSprite.getPosition().x, player.playerSprite.getPosition().y, vectorNormal + sf::Vector2f(-0.1f, -0.1f), player.playerSprite.getRotation(), static_cast<float>(Arms::SHOTGUN)));
@@ -72,10 +73,10 @@ void PlayerShootingShotgun(Player &player, sf::Vector2f &vectorNormal)
 void UpdatePlayerFrame(Player &player, float const step, sf::Vector2i &textureRect, sf::Vector2f &vectorNormal)
 {
 	player.currentFrame += step;
-	PlayerShootingM4A1(player, vectorNormal);
+	ShootFromM4A1(player, vectorNormal);
 	if (player.currentFrame > player.countFrame)
 	{
-		PlayerShootingShotgun(player, vectorNormal);
+		ShootFromShotgun(player, vectorNormal);
 		player.currentFrame -= player.countFrame;
 	}
 	player.playerSprite.setTextureRect(sf::IntRect(textureRect.x, textureRect.y * int(player.currentFrame), 150, 122));
@@ -121,13 +122,43 @@ void UpdateShotStandFrame(Player &player, sf::Vector2i &textureRect)
 		textureRect = sf::Vector2i(150, 122);
 	}
 }
+sf::IntRect Player::GetPlayerRect()
+{  
+	return sf::IntRect(playerSprite.getPosition().x - 20, playerSprite.getPosition().y - 20, 40, 40);//эта ф-ци€ нужна дл€ проверки столкновений 
+}
 
-
-void UpdatePlayer(Player &player, float elapsedTime)
+void Player::CheckCollisionWithMap(sf::Vector2f & speed, Objects const& barriers)
 {
+	for (auto barrier : barriers)
+	{
+        if (GetPlayerRect().intersects(barrier.rect) && (barrier.name == "solid"))
+        {
+            sf::Vector2f playerPosition = playerSprite.getPosition();
+            if ((playerPosition.x < barrier.rect.left) && ((mousePosition.x > barrier.rect.left) || (mousePosition.x < barrier.rect.left) && (speed.x > 0))) //слева
+            {
+                speed = sf::Vector2f(0, speed.y);
+            }
+            else if ((playerPosition.x > barrier.rect.left + barrier.rect.width) && ((mousePosition.x < barrier.rect.left) || (mousePosition.x > barrier.rect.left) && (speed.x < 0)))
+            {
+                speed = sf::Vector2f(0, speed.y);
+            }
+            else if ((playerPosition.y > barrier.rect.top) && ((mousePosition.y < barrier.rect.top) || (mousePosition.y > barrier.rect.top) && (speed.y < 0))) //снизу
+            {
+                speed = sf::Vector2f(speed.x, 0);
+            }
+            else if ((playerPosition.y < barrier.rect.top) && ((mousePosition.y > barrier.rect.top) || (mousePosition.y < barrier.rect.top) && (speed.y > 0))) //сверху
+            {
+                speed = sf::Vector2f(speed.x, 0);
+            }
+        }
+	}
+}
+void UpdatePlayer(Player &player, float elapsedTime, Objects const& barriers)
+{
+
 	const float step = PLAYER_SPEED * elapsedTime;
 	player.shootingTime += elapsedTime;
-	UpdatePlayerRotation(player);
+	RotatePlayer(player);
 	UpdateBullet(player.bullets, elapsedTime);
 
 	float dx = player.mousePosition.x - player.playerSprite.getPosition().x;
@@ -141,7 +172,6 @@ void UpdatePlayer(Player &player, float elapsedTime)
 	{
 		player.direction = Direction::NONE;
 	}
-
 
 	UpdateShotRunFrame(player, textureRect);
 	switch (player.direction)
@@ -164,6 +194,7 @@ void UpdatePlayer(Player &player, float elapsedTime)
 	break;
 	}
 	UpdatePlayerFrame(player, step, textureRect, vectorNormal);
+	player.CheckCollisionWithMap(speed, barriers);
 	player.playerSprite.move(speed);
 }
 

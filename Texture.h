@@ -8,5 +8,5 @@ struct TextureGame
 	sf::Texture weaponTexture;
 	sf::Texture bulletTexture;
 
-	void LoadingFromFileTexture();
+	void LoadTextureFiles();
 };

@@ -10,7 +10,7 @@ struct Lights
 	sf::Shader lightOverShapeShader;
 	sf::Sprite Lsprite;
 	sf::RenderStates lightRenderStates;
-	std::shared_ptr<ltbl::LightPointEmission> light2;
+	std::shared_ptr<ltbl::LightPointEmission> flashLight;
 	sf::Texture pointLightTexture;
 	sf::Texture ConeLightTexture;
 	sf::Texture  penumbraTexture;

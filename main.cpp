@@ -11,7 +11,6 @@ int main(int, char *[])
 	ContextSettings contextSettings;
 	Game game;
 	InitializeGame(game);
-
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	game.window.setMouseCursorVisible(false);
@@ -28,6 +27,5 @@ int main(int, char *[])
 		    timeSinceLastUpdate -= TIME_PER_FRAME;
 		}
 	}
-
 	return 0;
 }

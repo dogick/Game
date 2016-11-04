@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "level.h"
 
 #include <iostream>

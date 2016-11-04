@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Bullet.h"
 
 Bullet::Bullet(float x, float y, sf::Vector2f &Direction, float Rotation, float Damage)
@@ -17,3 +18,4 @@ void UpdateBullet(std::vector<Bullet*> bullets, float elapsedTime)
 		bullets[i]->position += sf::Vector2f(offsetX, offsetY);
 	}
 }
+

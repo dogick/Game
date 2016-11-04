@@ -4,6 +4,8 @@
 #include "Bullet.h"
 #include <iostream> 
 #include <vector>
+#include "level.h"
+#include "Var.h"
 
 struct PlayerSound
 {
@@ -13,13 +15,13 @@ struct PlayerSound
 	sf::SoundBuffer soundM4A1ShotBuffer;
 	sf::Sound soundM4A1Shot;
 
-	void LoadingFromFileSound();
+	void LoadSoundFiles();
 };
 
 enum struct Arms
 {
-	SHOTGUN = 20,
-	M4A1 = 10
+	SHOTGUN,
+	M4A1
 };
 
 enum CountFrameThePlayer
@@ -53,14 +55,16 @@ struct Player
 	Arms weapon;
 	PlayerSound playerSound;
 
-	sf::Sprite bulletSprite;
 	std::vector<Bullet*> bullets;
 	float shootingTime;
+
+    void CheckCollisionWithMap(sf::Vector2f & speed, Objects const& barrier);
+	sf::IntRect GetPlayerRect();
 };
 
 void InitializePlayer(Player & player, TextureGame & texture);
 void HandlePlayerKeyPress(const sf::Event::KeyEvent &event, Player &player);
 void HandlePlayerKeyRelease(const sf::Event::KeyEvent &event, Player &player);
-void UpdatePlayer(Player &player, float elapsedTime);
+void UpdatePlayer(Player &player, float elapsedTime, Objects const& object);
 sf::Vector2f GetMousePosition(sf::RenderWindow &window);
 void InitializePlayerSound(Player &player);

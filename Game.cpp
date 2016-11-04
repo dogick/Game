@@ -1,17 +1,20 @@
+#include "stdafx.h"
 #include "Game.h"
 #include <iostream>
 
 void InitializeGame(Game & game)
 {
-	game.level.LoadFromFile("platformer.tmx");
+    game.level.LoadFromFile("map/map.tmx");
 	game.light = new Lights(sf::Vector2f(static_cast<float>(game.level.GetTileSize().x), static_cast<float>(game.level.GetTileSize().y)));
 	game.view.reset(sf::FloatRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
 	game.window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Game");
 	game.viewLight = game.window.getDefaultView();
-	game.textureGame.LoadingFromFileTexture();
-	game.player.playerSound.LoadingFromFileSound();
+	game.textureGame.LoadTextureFiles();
+	game.player.playerSound.LoadSoundFiles();
+	game.barrier = game.level.GetObjects("solid");
 	InitializePlayer(game.player, game.textureGame);
 	InitializePlayer(game.player, game.textureGame);
+    game.bulletSprite.setTexture(game.textureGame.bulletTexture);
 	ReplaceCursor(game.textureGame.cursorTexture, game.cursorSprite);
 }
 
@@ -36,7 +39,6 @@ void ReplaceCursor(sf::Texture &cursorTexture, sf::Sprite &cursorSprite)
 	cursorSprite.setPosition(100, 100);
 }
 
-
 void HandleEvents(sf::RenderWindow & window, Player &player)
 {
 
@@ -60,31 +62,22 @@ void HandleEvents(sf::RenderWindow & window, Player &player)
 		default:
 			break;
 		}
-
-
-		if (event.type == sf::Event::MouseButtonPressed)
+		if ((event.key.code == sf::Mouse::Left) && (event.type == sf::Event::MouseButtonPressed))
 		{
-			if (event.key.code == sf::Mouse::Left)
-			{
-				player.isShot = true;
+			player.isShot = true;
 				
-			}
 		}
-		else  if (event.type == sf::Event::MouseButtonReleased)
+		else  if ((event.key.code == sf::Mouse::Left) && (event.type == sf::Event::MouseButtonReleased))
 		{
-			if (event.key.code == sf::Mouse::Left)
-			{
-				player.isShot = false;
-			}
+			player.isShot = false;
 		}
-
 	}
 }
 
 void Update(Game &game, float elapsedTime)
 {
 	game.player.mousePosition = GetMousePosition(game.window);
-	UpdatePlayer(game.player, elapsedTime);
+	UpdatePlayer(game.player, elapsedTime, game.barrier);
 	UpdateCursorPosition(game.window, game.cursorSprite);
 }
 
@@ -92,10 +85,21 @@ void RenderBullets(Game &game)
 {
 	for (int i = 0; i < game.player.bullets.size(); ++i)
 	{
-		game.player.bulletSprite.setPosition(game.player.bullets[i]->position);
-		game.player.bulletSprite.setRotation(game.player.bullets[i]->rotation);
-		game.window.draw(game.player.bulletSprite);
+		game.bulletSprite.setPosition(game.player.bullets[i]->position);
+		game.bulletSprite.setRotation(game.player.bullets[i]->rotation);
+		game.window.draw(game.bulletSprite);
 	}
+}
+
+void RenderLight(Game & game, sf::RenderWindow & window)
+{
+	window.setView(game.viewLight);
+	game.light->flashLight->_emissionSprite.setPosition(game.player.playerSprite.getPosition());
+	game.light->flashLight->_emissionSprite.setRotation(game.player.playerSprite.getRotation());
+	game.light->ls.render(game.view, game.light->unshadowShader, game.light->lightOverShapeShader);
+	game.light->Lsprite.setTexture(game.light->ls.getLightingTexture()); 
+	game.light->lightRenderStates.blendMode = sf::BlendMultiply; //фон
+	window.draw(game.light->Lsprite, game.light->lightRenderStates);
 }
 
 void Render(sf::RenderWindow & window, sf::Sprite & playerSprite, sf::Sprite &cursorSprite, Game &game)
@@ -104,25 +108,26 @@ void Render(sf::RenderWindow & window, sf::Sprite & playerSprite, sf::Sprite &cu
 	game.level.Draw(window);
 	RenderBullets(game);
 	window.draw(playerSprite);
-	window.setView(game.viewLight);
-	game.light->light2->_emissionSprite.setPosition(playerSprite.getPosition());
-	game.light->light2->_emissionSprite.setRotation(playerSprite.getRotation());
-	game.light->ls.render(game.view, game.light->unshadowShader, game.light->lightOverShapeShader);
-	game.light->Lsprite.setTexture(game.light->ls.getLightingTexture()); //затемнение
-	game.light->lightRenderStates.blendMode = sf::BlendMultiply; //фон
-	window.draw(game.light->Lsprite, game.light->lightRenderStates);
+	RenderLight(game, window);
 	window.setView(game.view);
 	window.draw(cursorSprite);
+
+    /*sf::RectangleShape shape1;
+    shape1.setSize(sf::Vector2f(40, 40));
+    sf::IntRect textureRect = playerSprite.getTextureRect();
+    shape1.setPosition(playerSprite.getPosition().x - 20, playerSprite.getPosition().y - 20);
+    shape1.setFillColor(sf::Color(255,255,255, 60));
+    window.draw(shape1);*/
 	window.display();
 }
 
 void GetPlayerCoordinateForView(sf::View & view, sf::Vector2f playerPosition)
 {
-	float tempX = playerPosition.x;
-	float tempY = playerPosition.y;
+	float tempX = int(playerPosition.x);
+	float tempY = int(playerPosition.y);
 
-	if (tempX < 600) tempX = 600;
-	if (tempY < 300) tempY = 300;
+	if (tempX < 700) tempX = 700;
+	if (tempY < 400) tempY = 400;
 
 
 	view.setCenter(tempX, tempY);
