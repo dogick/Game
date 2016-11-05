@@ -123,13 +123,13 @@ void Render(sf::RenderWindow & window, sf::Sprite & playerSprite, sf::Sprite &cu
 
 void GetPlayerCoordinateForView(sf::View & view, sf::Vector2f playerPosition)
 {
-	float tempX = int(playerPosition.x);
-	float tempY = int(playerPosition.y);
+	int tempX = int(playerPosition.x);
+    int tempY = int(playerPosition.y);
 
 	if (tempX < 700) tempX = 700;
 	if (tempY < 400) tempY = 400;
 
 
-	view.setCenter(tempX, tempY);
+	view.setCenter(float(tempX), float(tempY));
 
 }
